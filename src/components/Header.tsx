@@ -3,10 +3,10 @@
  * HEADER NAVIGASI UTAMA APLIKASI CBT SMP DARUL FAWAID ILMIYAH
  * ============================================================================
  * Fitur:
- * 1. Desain modern & responsif (rapi di smartphone dan desktop)
+ * 1. Desain modern, bersih, & responsif (rapi di smartphone dan desktop)
  * 2. Status koneksi database Google Spreadsheet & Drive
  * 3. Profil pengguna & nomor HP / NIS
- * 4. Menu peralihan akun cepat (Admin / Guru / Siswa) untuk kemudahan pengujian
+ * 4. Menu keluar & pengaturan database (tanpa tombol demo/trial)
  */
 
 import React, { useState } from 'react';
@@ -22,8 +22,10 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-  Sparkles,
-  Phone,
+  User,
+  ShieldCheck,
+  GraduationCap,
+  UserCheck,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -32,9 +34,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenAppScriptModal }) => {
-  const { currentUser, logout, quickLogin, allUsers } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { institution, appScriptConfig, isSyncing, syncAllWithSheet, syncStatus } = useExam();
-  const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const todayDateStr = new Intl.DateTimeFormat('id-ID', {
     weekday: 'long',
@@ -141,11 +143,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAppScriptModal }) => {
               </button>
             )}
 
-            {/* User Profile & Role Switcher */}
+            {/* User Profile Dropdown */}
             {currentUser && (
               <div className="relative">
                 <button
-                  onClick={() => setShowRoleSwitcher(!showRoleSwitcher)}
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                   className="flex items-center space-x-2 pl-2 pr-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all text-left"
                 >
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-black ring-2 ring-blue-400/30 shrink-0">
@@ -167,12 +169,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAppScriptModal }) => {
                 </button>
 
                 {/* Dropdown Menu Akun */}
-                {showRoleSwitcher && (
-                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 text-slate-800 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                    <div className="px-4 py-2.5 border-b border-slate-100">
-                      <p className="text-xs text-slate-500 font-medium">Akun Masuk:</p>
+                {showProfileDropdown && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 text-slate-800 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="px-4 py-3 border-b border-slate-100 space-y-1">
+                      <p className="text-xs text-slate-500 font-medium">Akun Terdaftar:</p>
                       <p className="font-bold text-slate-900 text-sm truncate">{currentUser.nama}</p>
-                      <div className="mt-1 flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 pt-0.5">
                         {getRoleBadge(currentUser.role)}
                         <span className="text-[11px] text-slate-500 font-mono">
                           {currentUser.role === 'siswa' ? `NIS: ${currentUser.nisOrNip}` : `HP: ${currentUser.phone || currentUser.nisOrNip}`}
@@ -180,54 +182,26 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAppScriptModal }) => {
                       </div>
                     </div>
 
-                    {/* Menu Beralih Akun (Khusus Uji Coba) */}
-                    <div className="px-3 py-2 border-b border-slate-100 bg-slate-50">
-                      <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-amber-500" /> Beralih Akun (Uji Coba 3 Peran):
-                      </p>
-                      <div className="space-y-1">
-                        {allUsers.slice(0, 5).map((u) => (
-                          <button
-                            key={u.id}
-                            onClick={() => {
-                              quickLogin(u.id);
-                              setShowRoleSwitcher(false);
-                            }}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                              currentUser.id === u.id
-                                ? 'bg-blue-100 text-blue-900 font-bold'
-                                : 'hover:bg-slate-200/80 text-slate-700'
-                            }`}
-                          >
-                            <span className="truncate pr-2 font-medium">{u.nama}</span>
-                            <span className="text-[10px] uppercase font-bold text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-300 shrink-0">
-                              {u.role}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="px-2 pt-1">
+                    <div className="px-2 pt-2 space-y-1">
                       <button
                         onClick={() => {
-                          setShowRoleSwitcher(false);
+                          setShowProfileDropdown(false);
                           onOpenAppScriptModal();
                         }}
-                        className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2"
+                        className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition-colors"
                       >
                         <Sliders className="w-4 h-4 text-blue-600" />
-                        <span>Setup Google Sheets & Drive</span>
+                        <span>Pengaturan Database Spreadsheet</span>
                       </button>
                       <button
                         onClick={() => {
-                          setShowRoleSwitcher(false);
+                          setShowProfileDropdown(false);
                           logout();
                         }}
-                        className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-2"
+                        className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors"
                       >
                         <LogOut className="w-4 h-4 text-rose-500" />
-                        <span>Keluar Akun</span>
+                        <span>Keluar Akun (Logout)</span>
                       </button>
                     </div>
                   </div>

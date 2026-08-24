@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { User, UserRole } from '../types';
 import { StorageService } from '../services/storageService';
 
@@ -19,20 +19,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentUser, setCurrentUser] = useState<User | null>(() => StorageService.getCurrentUser());
   const [allUsers, setAllUsers] = useState<User[]>(() => StorageService.getUsers());
 
-  useEffect(() => {
-    // If no user is logged in, default to initial admin or remember last user
-    if (!currentUser) {
-      const saved = StorageService.getCurrentUser();
-      if (saved) {
-        setCurrentUser(saved);
-      }
-    }
-  }, [currentUser]);
-
-  const refreshUsers = () => {
+  const refreshUsers = useCallback(() => {
     const users = StorageService.getUsers();
     setAllUsers(users);
-  };
+  }, []);
 
   const login = (username: string, password?: string, preferredRole?: UserRole): { success: boolean; message: string; user?: User } => {
     const users = StorageService.getUsers();

@@ -121,8 +121,7 @@ export const ExamProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     StorageService.saveUsers(users);
-    refreshUsers();
-  }, [users, refreshUsers]);
+  }, [users]);
 
   useEffect(() => {
     StorageService.saveInstitution(institution);
@@ -136,9 +135,10 @@ export const ExamProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!activeSession || activeSession.isCompleted) return;
 
+    const targetEndTime = activeSession.endTime;
     const timer = setInterval(() => {
       const now = Date.now();
-      const remaining = Math.max(0, Math.floor((activeSession.endTime - now) / 1000));
+      const remaining = Math.max(0, Math.floor((targetEndTime - now) / 1000));
 
       setActiveSession((prev) => {
         if (!prev) return null;
@@ -151,7 +151,7 @@ export const ExamProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [activeSession]);
+  }, [activeSession?.endTime, activeSession?.isCompleted]);
 
   // Exam Operations
   const addExam = (examData: Omit<Exam, 'id'>): Exam => {
@@ -249,17 +249,20 @@ export const ExamProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     const updated = [newUser, ...users];
     setUsers(updated);
+    refreshUsers();
     return newUser;
   };
 
   const updateUser = (updatedUser: User) => {
     const updated = users.map((u) => (u.id === updatedUser.id ? updatedUser : u));
     setUsers(updated);
+    refreshUsers();
   };
 
   const deleteUser = (userId: string) => {
     const updated = users.filter((u) => u.id !== userId);
     setUsers(updated);
+    refreshUsers();
   };
 
   const updateInstitution = (profile: Partial<InstitutionProfile>) => {
