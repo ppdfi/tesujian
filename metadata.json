@@ -1,0 +1,6 @@
+{
+  "name": "CBT Darul Fawaid Ilmiyah",
+  "description": "Aplikasi ujian interaktif online berbasis CBT untuk Lembaga Darul Fawaid Ilmiyah dengan multi-role Admin, Guru, dan Siswa terintegrasi Google Sheets via Apps Script.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
